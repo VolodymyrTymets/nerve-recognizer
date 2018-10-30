@@ -1,0 +1,28 @@
+{
+  "name": "nerve-recognizer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "ENERGY=0.4 MIC=0 DEBUG=true node ./index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VolodymyrTymets/nerve-recognizer.git"
+  },
+  "author": "volodymyrtymets",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/VolodymyrTymets/nerve-recognizer/issues"
+  },
+  "homepage": "https://github.com/VolodymyrTymets/nerve-recognizer#readme",
+  "dependencies": {
+    "fourier-transform": "^1.1.2",
+    "lodash": "^4.17.11",
+    "mic": "^2.1.2",
+    "play-sound": "^1.1.2",
+    "wav-decoder": "^1.3.0",
+    "waveheader": "0.0.2"
+  }
+}
