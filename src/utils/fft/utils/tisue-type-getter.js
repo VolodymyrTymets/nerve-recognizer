@@ -1,6 +1,6 @@
 
 const getTissueType = (energy, minEnergy) => {
-	let tissueType = '';
+	let tissueType = 'muscle';
 	if (energy > minEnergy * 0.8) {
 		tissueType = 'nerve';
 	}

@@ -28,13 +28,9 @@ const startRecord = () => {
     const { spectrum, energy, tissueType } = getSpectrumInfo(segment, config);
     if(tissueType === 'nerve') {
       if (config.DEBUG_MODE) {
-        console.log(`>> nerve:${energy}: maxSpectrum: ${max(spectrum)}`)
+        console.log(`>> ${tissueType}:${energy}: maxSpectrum: ${max(spectrum)}`)
       }
       notify.nerveNotify();
-    } else {
-      if (config.DEBUG_MODE) {
-        console.log(`>> muscle:${energy}: maxSpectrum: ${max(spectrum)}`)
-      }
     }
   });
 

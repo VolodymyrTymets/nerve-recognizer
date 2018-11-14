@@ -4,7 +4,7 @@ const mic = process.env.MIC && parseFloat(process.env.MIC) || process.argv[3] &&
 module.exports = {
   fft: {
    // meanSpectrum: meanSpectrum.meanSpectrum,
-    meanEnergy: energy,
+    minEnergy: energy,
     N: 40, // points to compare
   },
   segmenter: {
