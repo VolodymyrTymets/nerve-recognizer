@@ -29,8 +29,7 @@ class Notifier {
 	}
 
 	soundNotify() {
-		console.log(`aplay -D plughw:2 ${this._filePath}`)
-        exec(`aplay -D plughw:2 ${this._filePath}`).catch(console.log);
+		exec(`aplay -D plughw:2 ${this._filePath}`);
 	}
 
 	nerveNotify() {
