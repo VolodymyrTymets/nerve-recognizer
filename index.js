@@ -58,13 +58,13 @@ setInterval(() => {
     if (config.DEBUG_MODE) {
        console.log('--> NO data from mic');
     }
-    stopRecord();
+    // stopRecord();
     notify.recNotify(0);
   }
   limitsOfSilence = [];
-  if(!MIC_RUNED) {
-    startRecord();
-  }
+  // if(!MIC_RUNED) {
+  //   startRecord();
+  // }
 }, 1000);
 
 
