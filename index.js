@@ -7,6 +7,7 @@ const { getSpectrumInfo } = require('./src/utils/fft/getSpectrumInfo');
 const { notify } = require('./src/utils/notifier');
 
 let limitsOfSilence = [];
+let MIC_RUNED = true;
 
 const startRecord = () => {
   const mic = new Mic(config);
@@ -38,10 +39,11 @@ const startRecord = () => {
 const stopRecord = () => {
   if(global.mic) {
     mic.stop();
+    MIC_RUNED = false;
   }
 };
 
-startRecord();
+
 
 if (config.DEBUG_MODE) {
   notify.soundNotify();
@@ -54,11 +56,15 @@ setInterval(() => {
     notify.recNotify(1);
   } else {
     if (config.DEBUG_MODE) {
-       console.log(colors.FgRed, '--> NO data from mic')
+       console.log('--> NO data from mic');
     }
+    stopRecord();
     notify.recNotify(0);
   }
   limitsOfSilence = [];
+  if(!MIC_RUNED) {
+    startRecord();
+  }
 }, 2000);
 
 
@@ -67,3 +73,5 @@ process.on('exit', (code) => {
   console.log(`By by =)`);
 });
 
+
+startRecord();

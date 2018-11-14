@@ -20,9 +20,9 @@ module.exports = {
     fileType: 'wav',
   },
   gpio: {
-    rec: 20,
+    rec: 26,
     nerve: 21,
   },
-  limitOfSilence: 0.001,
+  limitOfSilence: 0.01,
   DEBUG_MODE: process.env.DEBUG || true,
 };
