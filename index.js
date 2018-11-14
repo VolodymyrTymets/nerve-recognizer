@@ -30,7 +30,7 @@ const startRecord = () => {
       notify.nerveNotify();
     }
     if (config.DEBUG_MODE) {
-      console.log(`>> muscle:${energy}: maxSpectrum: ${max(spectrum)}`)
+      console.log(`>> ${tissueType}:${energy}: maxSpectrum: ${max(spectrum)}`)
     }
   });
 };
@@ -49,7 +49,7 @@ if (config.DEBUG_MODE) {
 
 setInterval(() => {
   const meanLimitOfSilence = mean(limitsOfSilence);
-  //console.log('meanLimitOfSilence ->', { meanLimitOfSilence, c: config.limitOfSilence })
+
   if (meanLimitOfSilence > config.limitOfSilence) {
     notify.recNotify(1);
   } else {
