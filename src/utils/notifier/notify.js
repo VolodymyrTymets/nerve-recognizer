@@ -42,7 +42,7 @@ class Notifier {
 		this.soundNotify();
 	}
   recNotify(value) {
-    this._gpioNotify('rec', 1);
+    this._gpioNotify('rec', value);
   }
 }
 
