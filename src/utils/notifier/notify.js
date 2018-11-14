@@ -4,7 +4,7 @@ const player = require('play-sound')(opts = {});
 
 let recOut = null;
 let nerveOut = null;
-
+console.log('config.gpio ->', config.gpio)
 try {
   const Gpio = require('onoff').Gpio;
   recOut = new Gpio(config.gpio.rec, 'out');
@@ -25,7 +25,7 @@ class Notifier {
 	}
 
 	_gpioNotify(name, value){
-		console.log('_gpioNotify ->', { name, value, gpio:this._gpio });
+		console.log('_gpioNotify ->', { name, value });
       this._gpio[name] && this._gpio[name].writeSync(value);
 	}
 
