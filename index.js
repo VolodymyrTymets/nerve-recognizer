@@ -27,14 +27,12 @@ const startRecord = () => {
   segmenter.on('segment', (segment) => {
     const { spectrum, energy, tissueType } = getSpectrumInfo(segment, config);
     if(tissueType === 'nerve') {
-      if (config.DEBUG_MODE) {
-        console.log(`>> ${tissueType}:${energy}: maxSpectrum: ${max(spectrum)}`)
-      }
       notify.nerveNotify();
     }
+    if (config.DEBUG_MODE) {
+      console.log(`>> muscle:${energy}: maxSpectrum: ${max(spectrum)}`)
+    }
   });
-
-  // segmenter.on('noSegment', () => console.log('---> no serment'))
 };
 
 const stopRecord = () => {
