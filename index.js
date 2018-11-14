@@ -7,7 +7,7 @@ const { getSpectrumInfo } = require('./src/utils/fft/getSpectrumInfo');
 const { notify } = require('./src/utils/notifier');
 
 let limitsOfSilence = [];
-let MIC_RUNED = true;
+// let MIC_RUNED = true;
 
 const startRecord = () => {
   const mic = new Mic(config);
@@ -39,33 +39,28 @@ const startRecord = () => {
 const stopRecord = () => {
   if(global.mic) {
     mic.stop();
-    MIC_RUNED = false;
+    // MIC_RUNED = false;
   }
 };
 
 
+// if (config.DEBUG_MODE) {
+//   notify.soundNotify();
+// }
 
-if (config.DEBUG_MODE) {
-  notify.soundNotify();
-}
-
-setInterval(() => {
-  const meanLimitOfSilence = mean(limitsOfSilence);
-  console.log('meanLimitOfSilence ->', { l: limitsOfSilence.length, mean: meanLimitOfSilence})
-  if (meanLimitOfSilence > config.limitOfSilence) {
-    notify.recNotify(1);
-  } else {
-    if (config.DEBUG_MODE) {
-       console.log('--> NO data from mic');
-    }
-    // stopRecord();
-    notify.recNotify(0);
-  }
-  limitsOfSilence = [];
-  // if(!MIC_RUNED) {
-  //   startRecord();
-  // }
-}, 1000);
+// setInterval(() => {
+//   const meanLimitOfSilence = mean(limitsOfSilence);
+//   if (meanLimitOfSilence > config.limitOfSilence) {
+//     notify.recNotify(1);
+//   } else {
+//     if (config.DEBUG_MODE) {
+//        console.log('--> NO data from mic');
+//     }
+//     // stopRecord();
+//     notify.recNotify(0);
+//   }
+//   limitsOfSilence = [];
+// }, 2000);
 
 
 process.on('exit', (code) => {
