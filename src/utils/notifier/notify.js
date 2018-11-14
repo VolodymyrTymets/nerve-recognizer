@@ -1,6 +1,6 @@
 const path = require('path');
 const config = require('../../../config');
-const player = require('play-sound')(opts = {});
+const { spawn } = require('child_process');
 
 let recOut = null;
 let nerveOut = null;
@@ -29,11 +29,7 @@ class Notifier {
 	}
 
 	soundNotify() {
-    player.play(this._filePath, (err) => {
-      if (err) {
-        console.log('-> [notifier error]', err);
-      }
-    });
+		spawn(`aplay -D plughw:2 ${thi._filePath}`);
 	}
 
 	nerveNotify() {
