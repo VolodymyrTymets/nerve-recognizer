@@ -1,4 +1,4 @@
-const { sum, max, mean } = require('lodash');
+const { mean, max } = require('lodash');
 const config = require('./config');
 const { colors } = require('./src/utils/colors');
 const { Mic } = require('./src/utils/Mic');
@@ -21,7 +21,7 @@ const startRecord = () => {
 
   mic.start(recordTine, (audioData) => {
     const wave = audioData.channelData[0];
-    limitsOfSilence.push(max(wave));
+    limitsOfSilence.push(mean(wave.map(Math.abs)));
     segmenter.findSegment(wave);
   });
 
@@ -50,8 +50,8 @@ if (config.DEBUG_MODE) {
 }
 
 setInterval(() => {
-  const meanLimitOfSilence = mean(limitsOfSilence.map(Math.abs));
-  console.log('meanLimitOfSilence ->', meanLimitOfSilence)
+  const meanLimitOfSilence = mean(limitsOfSilence);
+  console.log('meanLimitOfSilence ->', { l: limitsOfSilence.length, mean: meanLimitOfSilence})
   if (meanLimitOfSilence > config.limitOfSilence) {
     notify.recNotify(1);
   } else {
@@ -65,7 +65,7 @@ setInterval(() => {
   if(!MIC_RUNED) {
     startRecord();
   }
-}, 2000);
+}, 1000);
 
 
 process.on('exit', (code) => {
