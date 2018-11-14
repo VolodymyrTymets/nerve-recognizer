@@ -1,6 +1,6 @@
 const path = require('path');
 const config = require('../../../config');
-const { spawn } = require('child_process');
+const { exec } = require('child_process');
 
 let recOut = null;
 let nerveOut = null;
@@ -30,7 +30,7 @@ class Notifier {
 
 	soundNotify() {
 		console.log(`aplay -D plughw:2 ${this._filePath}`)
-		spawn(`aplay -D plughw:2 ${this._filePath}`).catch(console.log);
+        exec(`aplay -D plughw:2 ${this._filePath}`).catch(console.log);
 	}
 
 	nerveNotify() {
