@@ -25,7 +25,8 @@ class Notifier {
 	}
 
 	_gpioNotify(name, value){
-    this._gpio[name] && this._gpio[name].writeSync(value);
+		console.log('_gpioNotify ->', { name, value, gpio:this._gpio });
+      this._gpio[name] && this._gpio[name].writeSync(value);
 	}
 
 	soundNotify() {
