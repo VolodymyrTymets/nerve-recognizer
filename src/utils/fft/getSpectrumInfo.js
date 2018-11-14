@@ -7,7 +7,7 @@ const getSpectrumInfo = (wave, config) => {
   // by fourier-transform
 	const spectrum = fft(wave);
 	const spliceSpectrumRes = spliceSpectrum(spectrum.spectrum, config.fft.N);
-	const energy = getSpectrumEnergy(spectrum.spectrum, spliceSpectrumtRes.maxIndex, 10);
+	const energy = getSpectrumEnergy(spectrum.spectrum, spliceSpectrumRes.maxIndex, 10);
 	const tissueType = getTissueType(energy, config.fft.minEnergy);
 
 	return {

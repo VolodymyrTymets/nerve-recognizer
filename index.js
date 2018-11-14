@@ -1,4 +1,4 @@
-const { mean } = require('lodash');
+const { mean, max } = require('lodash');
 const config = require('./config');
 const { colors } = require('./src/utils/colors');
 const { Mic } = require('./src/utils/Mic');
@@ -6,7 +6,7 @@ const { Segmenter } = require('./src/utils/segmenter');
 const { getSpectrumInfo } = require('./src/utils/fft/getSpectrumInfo');
 const { notify } = require('./src/utils/notifier');
 
-let MIC_DETECTED = false;
+let limitsOfSilence = [];
 
 const startRecord = () => {
   const mic = new Mic(config);
@@ -16,32 +16,29 @@ const startRecord = () => {
   global.mic = mic;
 
   const recordTine = new Date();
-  const segmenter = new Segmenter(recordTine, config);
+  const segmenter = new Segmenter(config.segmenter);
 
   mic.start(recordTine, (audioData) => {
     const wave = audioData.channelData[0];
-    if (mean(wave) < config.limitOfSilence) {
-      MIC_DETECTED = false;
-    } else {
-      MIC_DETECTED = true;
-    }
+    limitsOfSilence.push(mean(wave.map(Math.abs)));
     segmenter.findSegment(wave);
   });
 
   segmenter.on('segment', (segment) => {
-    const { spectrum, energy, tissueType, maxIndex } = getSpectrumInfo(segment, config);
-
+    const { spectrum, energy, tissueType } = getSpectrumInfo(segment, config);
     if(tissueType === 'nerve') {
       if (config.DEBUG_MODE) {
-        console.log(colors.BgGreen, `>> energy:${energy}: maxSpectrum: ${spectrum[maxIndex]}`)
+        console.log(`>> nerve:${energy}: maxSpectrum: ${max(spectrum)}`)
       }
       notify.nerveNotify();
     } else {
       if (config.DEBUG_MODE) {
-        console.log(colors.BgBlue, `>> energy:${energy}: maxSpectrum: ${spectrum[maxIndex]}`)
+        console.log(`>> muscle:${energy}: maxSpectrum: ${max(spectrum)}`)
       }
     }
   });
+
+  // segmenter.on('noSegment', () => console.log('---> no serment'))
 };
 
 const stopRecord = () => {
@@ -57,15 +54,18 @@ if (config.DEBUG_MODE) {
 }
 
 setInterval(() => {
-  if (MIC_DETECTED) {
+  const meanLimitOfSilence = mean(limitsOfSilence);
+  //console.log('meanLimitOfSilence ->', { meanLimitOfSilence, c: config.limitOfSilence })
+  if (meanLimitOfSilence > config.limitOfSilence) {
     notify.recNotify(1);
   } else {
     if (config.DEBUG_MODE) {
-      console.log(colors.FgRed, '--> NO data from mic')
+       console.log(colors.FgRed, '--> NO data from mic')
     }
     notify.recNotify(0);
   }
-}, 1000);
+  limitsOfSilence = [];
+}, 2000);
 
 
 process.on('exit', (code) => {

@@ -19,7 +19,7 @@ class Segmentor extends EventEmitter {
 		this._waves = [];
 		this._everages = [];
 		this._limitOfSilence = 0;
-		this._meanSegmentLength = settings.meanSegmentLength;
+		this._meanSegmentLength = settings.minSegmentLength;
 		this._minSegmentTimeToListen = settings.minSegmentTimeToListen;
 		// take every minSegmentTimeToListen s limit of sielence
 		setInterval(() => {
