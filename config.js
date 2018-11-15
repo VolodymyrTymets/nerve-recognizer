@@ -25,6 +25,6 @@ module.exports = {
     nerve: 21,
     muscle: 16,
   },
-  limitOfSilence: 0.2,
+  limitOfSilence: 0.1,
   DEBUG_MODE: process.env.DEBUG || true,
 };
