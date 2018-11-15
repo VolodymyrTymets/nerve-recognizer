@@ -68,7 +68,7 @@ setInterval(() => {
   if(noiseLevel !== NaN && noiseLevel < config.limitOfSilence) {
     !MIC_IS_RUN ? startRecord() : stopRecord();
   }
-  // console.log(MIC_IS_RUN ? colors.FgGreen : colors.FgRed ,`noiseLevel ${MIC_IS_RUN} ->`, noiseLevel);
+  console.log(MIC_IS_RUN ? colors.FgGreen : colors.FgRed ,`noiseLevel ${MIC_IS_RUN} ->`, noiseLevel);
 }, 2000);
 
 console.log(`Run: mic:${config.mic.device} energy: ${config.fft.minEnergy} gpio: [mic:${config.gpio.mic} nerve:${config.gpio.nerve} muscle:${config.gpio.muscle}]`)
