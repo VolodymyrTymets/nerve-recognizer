@@ -23,8 +23,8 @@ module.exports = {
   gpio: {
     mic: 26,
     nerve: 21,
-    muscle: 16,
+    muscle: 20,
   },
-  limitOfSilence: 0.1,
+  limitOfSilence: 0.2,
   DEBUG_MODE: process.env.DEBUG || true,
 };
