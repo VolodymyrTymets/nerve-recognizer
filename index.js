@@ -63,9 +63,9 @@ global.mic = new Mic(config, (audioData) => {
 
 startRecord();
 setInterval(() => {
-  const noiseLevel = mean(noiseLevels);
+  const noiseLevel = mean(noiseLevels) || 0;
   noiseLevels = [];
-  if(noiseLevel !== NaN && noiseLevel < config.limitOfSilence) {
+  if(noiseLevel < config.limitOfSilence) {
     !MIC_IS_RUN ? startRecord() : stopRecord();
   }
   console.log(MIC_IS_RUN ? colors.FgGreen : colors.FgRed ,`noiseLevel ${MIC_IS_RUN} ->`, noiseLevel);
