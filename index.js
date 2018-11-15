@@ -7,6 +7,8 @@ const { getSpectrumInfo } = require('./src/utils/fft/getSpectrumInfo');
 const { notify } = require('./src/utils/notifier');
 const { findNoiseLevel } = require('./src/utils/silence-detect');
 const { NERVE, MUSCLE } = require('./src/constants');
+const { saveIntoCsv, pushToReport, getFromReport, clearReport } = require('./src/utils/csv-reporter');
+
 
 let noiseLevels = [];
 let MIC_IS_RUN = false;
@@ -28,16 +30,26 @@ const startRecord = () => {
 // Segment part
 const segmenter = new Segmenter(config.segmenter);
 segmenter.on('segment', (segment) => {
+  const noiseLevel = mean(noiseLevels);
+  if(!MIC_IS_RUN) {
+    return;
+  }
+
   const { spectrum, energy, tissueType } = getSpectrumInfo(segment, config);
+  const maxSpectrum = max(spectrum);
+  const pushToReportF = pushToReport(noiseLevel, energy, maxSpectrum);
+
   if(tissueType === NERVE) {
     notify.nerveNotify();
+    pushToReportF(NERVE);
   }
   if(tissueType === MUSCLE) {
-    notify.muscleNotify();
+    notify.muscleNotify(MUSCLE);
+    pushToReportF(MUSCLE);
   }
   if (config.DEBUG_MODE) {
     console.log(tissueType == NERVE ? colors.FgBlue : colors.FgGreen,
-      `>> ${tissueType}:${energy}: maxSpectrum: ${max(spectrum)}`)
+      `>>[${noiseLevel}] ${tissueType}:${energy}: maxSpectrum: ${maxSpectrum} = [${(energy / noiseLevel) * 100} %]`)
   }
 });
 
@@ -56,14 +68,25 @@ setInterval(() => {
   if(noiseLevel < config.limitOfSilence) {
     !MIC_IS_RUN ? startRecord() : stopRecord();
   }
-  //console.log(MIC_IS_RUN ? colors.FgGreen : colors.FgRed ,`noiseLevel ${MIC_IS_RUN} ->`, noiseLevel);
+  console.log(MIC_IS_RUN ? colors.FgGreen : colors.FgRed ,`noiseLevel ${MIC_IS_RUN} ->`, noiseLevel);
 }, 2000);
 
 console.log(`Run: mic:${config.mic.device} energy: ${config.fft.minEnergy} gpio: [mic:${config.gpio.mic} nerve:${config.gpio.nerve} muscle:${config.gpio.muscle}]`)
+
 
 process.on('exit', () => {
   stopRecord();
   notify.gpioOff();
   console.log(colors.FgWhite,'<----by by----->');
 });
-process.on('SIGINT', process.exit);
+process.on('SIGINT', async () => {
+  try {
+    await saveIntoCsv(getFromReport(MUSCLE), MUSCLE);
+    await saveIntoCsv(getFromReport(NERVE), NERVE);
+    clearReport(NERVE);
+    clearReport(MUSCLE);
+  } catch (e) {
+    console.log(e)
+  }
+  process.exit();
+});
