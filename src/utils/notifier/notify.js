@@ -57,6 +57,11 @@ class Notifier {
     setTimeout(() => this._gpioNotify(MUSCLE, 0), 500);
     this.soundNotify(MUSCLE);
   }
+  gpioOff() {
+    this._gpioNotify(MUSCLE, 0);
+    this._gpioNotify(NERVE, 0);
+    this._gpioNotify(MIC, 0);
+  }
   micNotify(value) {
     this._gpioNotify(MIC, value);
   }

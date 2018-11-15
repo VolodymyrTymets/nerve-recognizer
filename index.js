@@ -59,6 +59,11 @@ setInterval(() => {
   //console.log(MIC_IS_RUN ? colors.FgGreen : colors.FgRed ,`noiseLevel ${MIC_IS_RUN} ->`, noiseLevel);
 }, 2000);
 
-process.on('exit', stopRecord);
-
 console.log(`Run: mic:${config.mic.device} energy: ${config.fft.minEnergy} gpio: [mic:${config.gpio.mic} nerve:${config.gpio.nerve} muscle:${config.gpio.muscle}]`)
+
+process.on('exit', () => {
+  stopRecord();
+  notify.gpioOff();
+  console.log(colors.FgWhite,'<----by by----->');
+});
+process.on('SIGINT', process.exit);
