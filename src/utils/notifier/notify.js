@@ -1,24 +1,33 @@
 const path = require('path');
 const config = require('../../../config');
 const { exec } = require('child_process');
+const { NERVE, MIC, MUSCLE } = require('../../constants');
 
-let recOut = null;
+let micOut = null;
 let nerveOut = null;
+let muscleOut = null;
 
 try {
   const Gpio = require('onoff').Gpio;
-  recOut = new Gpio(config.gpio.rec, 'out');
+  micOut = new Gpio(config.gpio.mic, 'out');
   nerveOut = new Gpio(config.gpio.nerve, 'out');
+  muscleOut = new Gpio(config.gpio.muscle, 'out');
 } catch (err) {
   console.log('Error -> GPIO is not detected!!!');
 }
 
 class Notifier {
 	constructor() {
-		this._filePath = path.resolve(__dirname ,'../../assets', './notification.wav');
+    this._filePath = {
+    	def: path.resolve(__dirname ,'../../assets', './notification.wav'),
+      nerve: path.resolve(__dirname ,'../../assets', './nerve.wav'),
+      muscle: path.resolve(__dirname ,'../../assets', './muscle.wav'),
+    };
+
 		this._gpio = {
-			rec: recOut,
+			mic: micOut,
 			nerve: nerveOut,
+			muscle: muscleOut,
 		};
 		this._gpioNotify = this._gpioNotify.bind(this);
     this.soundNotify = this.soundNotify.bind(this);
@@ -28,17 +37,28 @@ class Notifier {
       this._gpio[name] && this._gpio[name].writeSync(value);
 	}
 
-	soundNotify() {
-		exec(`aplay -D plughw:2 ${this._filePath}`);
+	soundNotify(type = 'def') {
+		const filePath = this._filePath[type];
+		exec(`aplay -D plughw:2 ${filePath}`);
+    exec(`aplay -D plughw:1 ${filePath}`);
+    exec(`aplay -D plughw:0 ${filePath}`);
+    exec(`aplay -D hw:0 ${filePath}`);
 	}
 
 	nerveNotify() {
-		this._gpioNotify('nerve', 1);
-		setTimeout(() => this._gpioNotify('nerve', 0), 500);
-		this.soundNotify();
+		this._gpioNotify(NERVE, 1);
+    this._gpioNotify(MUSCLE, 1);
+		setTimeout(() => this._gpioNotify(NERVE, 0), 500);
+		this.soundNotify('nerve');
 	}
-  recNotify(value) {
-    this._gpioNotify('rec', value);
+  muscleNotify() {
+    this._gpioNotify(MUSCLE, 1);
+    this._gpioNotify(NERVE, 0);
+    setTimeout(() => this._gpioNotify(MUSCLE, 0), 500);
+    this.soundNotify(MUSCLE);
+  }
+  micNotify(value) {
+    this._gpioNotify(MIC, value);
   }
 }
 

@@ -1,5 +1,6 @@
 const energy = process.env.ENERGY && parseFloat(process.env.ENERGY) || process.argv[2] && parseFloat(process.argv[2]) || 0.4
-const mic = process.env.MIC && parseFloat(process.env.MIC) || process.argv[3] && parseFloat(process.argv[3]) || 1;
+const micName = process.env.MIC && parseFloat(process.env.MIC) || process.argv[3] && parseFloat(process.argv[3]) || 1;
+const micDevice  = process.env.MICDEVICE && parseFloat(process.env.MICDEVICE) || process.argv[4] && parseFloat(process.argv[4]) || 1;
 
 module.exports = {
   fft: {
@@ -16,13 +17,14 @@ module.exports = {
     channels: 2,
     debug: false,
     exitOnSilence: 6,
-    device: `plughw:${mic}`,
+    device: `${micName === 0 ? 'hw:' : 'plughw:'}${micDevice}`,
     fileType: 'wav',
   },
   gpio: {
-    rec: 26,
+    mic: 26,
     nerve: 21,
+    muscle: 20,
   },
-  limitOfSilence: 0.01,
+  limitOfSilence: 0.1,
   DEBUG_MODE: process.env.DEBUG || true,
 };

@@ -5,68 +5,60 @@ const { Mic } = require('./src/utils/Mic');
 const { Segmenter } = require('./src/utils/segmenter');
 const { getSpectrumInfo } = require('./src/utils/fft/getSpectrumInfo');
 const { notify } = require('./src/utils/notifier');
+const { findNoiseLevel } = require('./src/utils/silence-detect');
+const { NERVE, MUSCLE } = require('./src/constants');
 
-let limitsOfSilence = [];
-// let MIC_RUNED = true;
-
-const startRecord = () => {
-  const mic = new Mic(config);
-  if(global.mic) {
-    mic.stop();
-  }
-  global.mic = mic;
-
-  const recordTine = new Date();
-  const segmenter = new Segmenter(config.segmenter);
-
-  mic.start(recordTine, (audioData) => {
-    const wave = audioData.channelData[0];
-    limitsOfSilence.push(mean(wave.map(Math.abs)));
-    segmenter.findSegment(wave);
-  });
-
-  segmenter.on('segment', (segment) => {
-    const { spectrum, energy, tissueType } = getSpectrumInfo(segment, config);
-    if(tissueType === 'nerve') {
-      notify.nerveNotify();
-    }
-    if (config.DEBUG_MODE) {
-      console.log(`>> ${tissueType}:${energy}: maxSpectrum: ${max(spectrum)}`)
-    }
-  });
-};
+let noiseLevels = [];
+let MIC_IS_RUN = false;
 
 const stopRecord = () => {
   if(global.mic) {
     mic.stop();
-    // MIC_RUNED = false;
+    MIC_IS_RUN = false;
+    notify.micNotify(0);
   }
 };
-
-
-// if (config.DEBUG_MODE) {
-//   notify.soundNotify();
-// }
-
-// setInterval(() => {
-//   const meanLimitOfSilence = mean(limitsOfSilence);
-//   if (meanLimitOfSilence > config.limitOfSilence) {
-//     notify.recNotify(1);
-//   } else {
-//     if (config.DEBUG_MODE) {
-//        console.log('--> NO data from mic');
-//     }
-//     // stopRecord();
-//     notify.recNotify(0);
-//   }
-//   limitsOfSilence = [];
-// }, 2000);
-
-
-process.on('exit', (code) => {
-  stopRecord();
-  console.log(`By by =)`);
+const startRecord = () => {
+  if(global.mic) {
+    mic.start();
+    MIC_IS_RUN = true;
+    notify.micNotify(1);
+  }
+};
+// Segment part
+const segmenter = new Segmenter(config.segmenter);
+segmenter.on('segment', (segment) => {
+  const { spectrum, energy, tissueType } = getSpectrumInfo(segment, config);
+  if(tissueType === NERVE) {
+    notify.nerveNotify();
+  }
+  if(tissueType === MUSCLE) {
+    notify.muscleNotify();
+  }
+  if (config.DEBUG_MODE) {
+    console.log(tissueType == NERVE ? colors.FgBlue : colors.FgGreen,
+      `>> ${tissueType}:${energy}: maxSpectrum: ${max(spectrum)}`)
+  }
 });
 
+// Mic part
+global.mic = new Mic(config, (audioData) => {
+  const wave = audioData.channelData[0];
+  const noiseLevel = findNoiseLevel(wave);
+  noiseLevels.push(noiseLevel);
+  segmenter.findSegment(wave);
+});
 
 startRecord();
+setInterval(() => {
+  const noiseLevel = mean(noiseLevels);
+  noiseLevels = [];
+  if(noiseLevel < config.limitOfSilence) {
+    !MIC_IS_RUN ? startRecord() : stopRecord();
+  }
+  //console.log(MIC_IS_RUN ? colors.FgGreen : colors.FgRed ,`noiseLevel ${MIC_IS_RUN} ->`, noiseLevel);
+}, 2000);
+
+process.on('exit', stopRecord);
+
+console.log(`Run: mic:${config.mic.device} energy: ${config.fft.minEnergy} gpio: [mic:${config.gpio.mic} nerve:${config.gpio.nerve} muscle:${config.gpio.muscle}]`)

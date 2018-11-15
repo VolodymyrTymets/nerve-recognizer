@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ENERGY=0.4 MIC=0 DEBUG=true node ./index.js",
+    "start": "ENERGY=0.4 MICDEVICE=0 MIC=0 DEBUG=true node ./index.js",
+    "raspi": "ENERGY=0.005 MICDEVICE=1 MIC=1 DEBUG=true node ./index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
