@@ -7,7 +7,7 @@ const { getSpectrumInfo } = require('./src/utils/fft/getSpectrumInfo');
 const { notify } = require('./src/utils/notifier');
 const { findNoiseLevel } = require('./src/utils/silence-detect');
 const { NERVE, MUSCLE } = require('./src/constants');
-const { saveIntoCsv, pushToReport, getFromReport, clearReport } = require('./src/utils/csv-reporter');
+// const { saveIntoCsv, pushToReport, getFromReport, clearReport } = require('./src/utils/csv-reporter');
 
 
 let noiseLevels = [];
@@ -38,15 +38,15 @@ segmenter.on('segment', (segment) => {
 
   const { spectrum, energy, tissueType, rating } = getSpectrumInfo(segment, noiseLevel, config);
   const maxSpectrum = max(spectrum);
-  const pushToReportF = pushToReport(noiseLevel, energy, maxSpectrum);
+  // const pushToReportF = pushToReport(noiseLevel, energy, maxSpectrum);
 
   if(tissueType === NERVE) {
     notify.nerveNotify();
-    pushToReportF(NERVE);
+    // pushToReportF(NERVE);
   }
   if(tissueType === MUSCLE) {
     notify.muscleNotify(MUSCLE);
-     pushToReportF(MUSCLE);
+    // pushToReportF(MUSCLE);
   }
   if (config.DEBUG_MODE) {
     console.log(tissueType == NERVE ? colors.FgBlue : colors.FgGreen,
@@ -84,13 +84,13 @@ process.on('exit', () => {
 });
 process.on('SIGINT', async () => {
   // for investigation
-  try {
-    await saveIntoCsv(getFromReport(MUSCLE), MUSCLE);
-    await saveIntoCsv(getFromReport(NERVE), NERVE);
-    clearReport(NERVE);
-    clearReport(MUSCLE);
-  } catch (e) {
-    console.log(e)
-  }
+  // try {
+  //   await saveIntoCsv(getFromReport(MUSCLE), MUSCLE);
+  //   await saveIntoCsv(getFromReport(NERVE), NERVE);
+  //   clearReport(NERVE);
+  //   clearReport(MUSCLE);
+  // } catch (e) {
+  //   console.log(e)
+  // }
   process.exit();
 });

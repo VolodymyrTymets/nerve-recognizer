@@ -8,7 +8,7 @@ const getSpectrumInfo = (wave, noiseLevel, config) => {
 	const spectrum = fft(wave);
 	const spliceSpectrumRes = spliceSpectrum(spectrum.spectrum, config.fft.N);
 	const energy = getSpectrumEnergy(spectrum.spectrum, spliceSpectrumRes.maxIndex, 10);
-	const rating = (energy / noiseLevel) * 10000;
+	const rating = (spectrum.spectrum[spliceSpectrumRes.maxIndex] / noiseLevel) * 10000;
 	const tissueType = getTissueType(rating, config.fft.rating);
 
 	return {
