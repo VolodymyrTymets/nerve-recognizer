@@ -1,7 +1,6 @@
-const energy = process.env.ENERGY && parseFloat(process.env.ENERGY) || process.argv[2] && parseFloat(process.argv[2]) || 0.4
-const micName = process.env.MIC && parseFloat(process.env.MIC) || process.argv[3] && parseFloat(process.argv[3]) === 0 ? 0 : 1;
-const micDevice  = process.env.MICDEVICE && parseFloat(process.env.MICDEVICE) || process.argv[4] && parseFloat(process.argv[4]) === 0 ? 0 : 1;
-
+const energy = process.argv[2] && parseFloat(process.argv[2]) || 0.4;
+const micName = process.argv[3] && parseFloat(process.argv[3]) === 0 ? 0 : 1;
+const micDevice  = process.argv[4] && parseFloat(process.argv[4]) === 0 ? 0 : 1;
 module.exports = {
   fft: {
    // meanSpectrum: meanSpectrum.meanSpectrum,
