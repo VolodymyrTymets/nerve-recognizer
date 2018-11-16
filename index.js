@@ -23,9 +23,9 @@ const stopRecord = () => {
 const startRecord = () => {
   if(global.mic) {
     mic.start();
-    MIC_IS_RUN = MIC_IS_RUN === 2 ? MIC_IS_RUN + 1 : 2;
+    MIC_IS_RUN = MIC_IS_RUN !== 2 ? MIC_IS_RUN + 1 : 2;
     console.log('MIC_IS_RUN ==>', MIC_IS_RUN);
-    notify.micNotify(MIC_IS_RUN === 2);
+    notify.micNotify(MIC_IS_RUN === 2 ? 0 : 1);
   }
 };
 // Segment part
