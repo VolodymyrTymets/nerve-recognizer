@@ -11,21 +11,21 @@ const { saveIntoCsv, pushToReport, getFromReport, clearReport } = require('./src
 
 
 let noiseLevels = [];
-let MIC_IS_RUN = 0;
+let MIC_IS_RUN = false;
+let COUNT_OF_TRY_TO_LISTEN = 0;
 
 const stopRecord = () => {
   if(global.mic) {
     mic.stop();
-    MIC_IS_RUN = 0;
+    MIC_IS_RUN = false;
+    COUNT_OF_TRY_TO_LISTEN = 0;
     notify.micNotify(0);
   }
 };
 const startRecord = () => {
   if(global.mic) {
     mic.start();
-    MIC_IS_RUN = MIC_IS_RUN !== 2 ? MIC_IS_RUN + 1 : 2;
-    console.log('MIC_IS_RUN ==>', MIC_IS_RUN);
-    notify.micNotify(MIC_IS_RUN === 2 ? 0 : 1);
+    MIC_IS_RUN = true;
   }
 };
 // Segment part
@@ -66,10 +66,12 @@ startRecord();
 setInterval(() => {
   const noiseLevel = mean(noiseLevels) || 0;
   noiseLevels = [];
+
   if(noiseLevel < config.limitOfSilence) {
     !MIC_IS_RUN ? startRecord() : stopRecord();
   }
-  // console.log(MIC_IS_RUN ? colors.FgGreen : colors.FgRed ,`noiseLevel ${MIC_IS_RUN} ->`, noiseLevel);
+  COUNT_OF_TRY_TO_LISTEN = COUNT_OF_TRY_TO_LISTEN !== 3 ? COUNT_OF_TRY_TO_LISTEN + 1 : 3;
+  notify.micNotify(COUNT_OF_TRY_TO_LISTEN === 3 ? 1 : 0);
 }, 2000);
 
 console.log(`Run: mic:${config.mic.device} energy: ${config.fft.minEnergy} gpio: [mic:${config.gpio.mic} nerve:${config.gpio.nerve} muscle:${config.gpio.muscle}]`)
