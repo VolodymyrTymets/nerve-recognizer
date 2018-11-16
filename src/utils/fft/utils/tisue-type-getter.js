@@ -2,7 +2,7 @@ const { NERVE, MUSCLE } = require('../../../constants');
 
 const getTissueType = (energy, minEnergy) => {
 	let tissueType = MUSCLE;
-	if (energy > minEnergy * 0.8) {
+	if (energy > minEnergy) {
 		tissueType = NERVE;
 	}
 	// if (energy < config.minEnergy) {

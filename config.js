@@ -5,6 +5,7 @@ const micDevice  = process.env.MICDEVICE && parseFloat(process.env.MICDEVICE) ||
 module.exports = {
   fft: {
    // meanSpectrum: meanSpectrum.meanSpectrum,
+    rating: 100,
     minEnergy: energy,
     N: 40, // points to compare
   },

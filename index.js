@@ -35,7 +35,7 @@ segmenter.on('segment', (segment) => {
     return;
   }
 
-  const { spectrum, energy, tissueType } = getSpectrumInfo(segment, config);
+  const { spectrum, energy, tissueType, rating } = getSpectrumInfo(segment, noiseLevel, config);
   const maxSpectrum = max(spectrum);
   const pushToReportF = pushToReport(noiseLevel, energy, maxSpectrum);
 
@@ -49,7 +49,7 @@ segmenter.on('segment', (segment) => {
   }
   if (config.DEBUG_MODE) {
     console.log(tissueType == NERVE ? colors.FgBlue : colors.FgGreen,
-      `>>[${noiseLevel}] ${tissueType}:${energy}: maxSpectrum: ${maxSpectrum} = [${(energy / noiseLevel) * 100} %]`)
+      `>>[${noiseLevel}] ${tissueType}:${energy}: maxSpectrum: ${maxSpectrum} = [${parseInt(rating)} %]`)
   }
 });
 
@@ -68,7 +68,7 @@ setInterval(() => {
   if(noiseLevel < config.limitOfSilence) {
     !MIC_IS_RUN ? startRecord() : stopRecord();
   }
-  console.log(MIC_IS_RUN ? colors.FgGreen : colors.FgRed ,`noiseLevel ${MIC_IS_RUN} ->`, noiseLevel);
+  // console.log(MIC_IS_RUN ? colors.FgGreen : colors.FgRed ,`noiseLevel ${MIC_IS_RUN} ->`, noiseLevel);
 }, 2000);
 
 console.log(`Run: mic:${config.mic.device} energy: ${config.fft.minEnergy} gpio: [mic:${config.gpio.mic} nerve:${config.gpio.nerve} muscle:${config.gpio.muscle}]`)
