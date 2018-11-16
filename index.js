@@ -11,20 +11,21 @@ const { saveIntoCsv, pushToReport, getFromReport, clearReport } = require('./src
 
 
 let noiseLevels = [];
-let MIC_IS_RUN = false;
+let MIC_IS_RUN = 0;
 
 const stopRecord = () => {
   if(global.mic) {
     mic.stop();
-    MIC_IS_RUN = false;
+    MIC_IS_RUN = 0;
     notify.micNotify(0);
   }
 };
 const startRecord = () => {
   if(global.mic) {
     mic.start();
-    MIC_IS_RUN = true;
-    notify.micNotify(1);
+    MIC_IS_RUN = MIC_IS_RUN === 2 ? MIC_IS_RUN + 1 : 2;
+    console.log('MIC_IS_RUN ==>', MIC_IS_RUN);
+    notify.micNotify(MIC_IS_RUN === 2);
   }
 };
 // Segment part
@@ -45,11 +46,11 @@ segmenter.on('segment', (segment) => {
   }
   if(tissueType === MUSCLE) {
     notify.muscleNotify(MUSCLE);
-    pushToReportF(MUSCLE);
+     pushToReportF(MUSCLE);
   }
   if (config.DEBUG_MODE) {
     console.log(tissueType == NERVE ? colors.FgBlue : colors.FgGreen,
-      `>>[${noiseLevel}] ${tissueType}:${energy}: maxSpectrum: ${maxSpectrum} = [${parseInt(rating)} %]`)
+      `>>[${noiseLevel}] ${tissueType}:${energy}: maxSpectrum: ${maxSpectrum} = [${parseInt(rating) || 0} %]`)
   }
 });
 
@@ -80,6 +81,7 @@ process.on('exit', () => {
   console.log(colors.FgWhite,'<----by by----->');
 });
 process.on('SIGINT', async () => {
+  // for investigation
   try {
     await saveIntoCsv(getFromReport(MUSCLE), MUSCLE);
     await saveIntoCsv(getFromReport(NERVE), NERVE);
