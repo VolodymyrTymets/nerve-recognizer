@@ -10,5 +10,15 @@ const getTissueType = (energy, minEnergy) => {
 	// }
 	return tissueType;
 };
+const getTissueTypeByNoiseLeavel = (rating, noiseLevel, config) => {
+  let tissueType = '';
+  if (noiseLevel > config.fft.minNoiseLevel && rating > config.fft.rating) {
+    tissueType = NERVE;
+  }
+  if (noiseLevel > config.fft.minNoiseLevel && rating < config.fft.rating) {
+    tissueType = MUSCLE;
+  }
+  return tissueType;
+};
 
-module.exports = { getTissueType };
+module.exports = { getTissueType, getTissueTypeByNoiseLeavel };

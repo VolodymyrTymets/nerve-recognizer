@@ -4,7 +4,8 @@ const micDevice  = process.argv[4] && parseFloat(process.argv[4]) === 0 ? 0 : 1;
 module.exports = {
   fft: {
    // meanSpectrum: meanSpectrum.meanSpectrum,
-    rating: 80,
+    rating: 40,
+    minNoiseLevel: 2,
     minEnergy: energy,
     N: 40, // points to compare
   },

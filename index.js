@@ -49,8 +49,8 @@ segmenter.on('segment', (segment) => {
     // pushToReportF(MUSCLE);
   }
   if (config.DEBUG_MODE) {
-    console.log(tissueType == NERVE ? colors.FgBlue : colors.FgGreen,
-      `>>[${noiseLevel}] ${tissueType}:${energy}: maxSpectrum: ${maxSpectrum} = [${parseInt(rating) || 0} %]`)
+    // console.log(tissueType == NERVE ? colors.FgBlue : colors.FgGreen,
+    //   `>>[${noiseLevel}] ${tissueType}:${energy}: maxSpectrum: ${maxSpectrum} = [${parseInt(rating) || 0} %]`)
   }
 });
 
