@@ -80,7 +80,7 @@ setInterval(() => {
   notify.micNotify(COUNT_OF_TRY_TO_LISTEN === 3 ? 1 : 0);
 }, 2000);
 
-console.log(`Run: mic:${config.mic.device} energy: ${config.fft.minEnergy} gpio: [mic:${config.gpio.mic} nerve:${config.gpio.nerve} muscle:${config.gpio.muscle}]`)
+console.log(`Run: mic:${config.mic.device} noise: ${config.fft.minNoiseLevel} rating: ${config.fft.rating} gpio: [mic:${config.gpio.mic} nerve:${config.gpio.nerve} muscle:${config.gpio.muscle}]`)
 
 
 process.on('exit', () => {
