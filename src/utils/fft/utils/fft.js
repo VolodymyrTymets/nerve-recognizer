@@ -16,7 +16,7 @@ const spliceSpectrum = (spectrum, length) => {
 };
 
 
-const fft = (wave) => {
+const fft = (wave, buffer) => {
 	let waveLength = wave.length;
 	let index = nearestPow2(waveLength);
 
@@ -24,8 +24,8 @@ const fft = (wave) => {
 		waveLength = waveLength - 2;
 		index = nearestPow2(waveLength);
 	}
-
 	const cutedWave = wave.slice(0, index);
+
 	const spectrum = fftLib(cutedWave);
 	return { wave: values(cutedWave), spectrum };
 };

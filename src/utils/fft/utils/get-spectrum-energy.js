@@ -1,5 +1,7 @@
 const { sum } = require('lodash');
 
+const N = 10000;
+
 const getIndexOfMax = spectrum => {
 	let max = spectrum[0];
 	let maxIndex = 0;
@@ -14,6 +16,7 @@ const getIndexOfMax = spectrum => {
 };
 
 const getSpectrumEnergy= (spectrum, maxIndex, l) => {
+  const toInt = a => parseInt(a *  N);
 	const indexOfMax = maxIndex || getIndexOfMax(spectrum);
 	// build arra to calculate energy +-l from max amplitude
 	const toCalculation = [];
@@ -36,10 +39,11 @@ const getSpectrumEnergy= (spectrum, maxIndex, l) => {
 	for(let index = 0; index < toCalculation.length - 1; index ++) {
 		const a = index;
 		const b = toCalculation[index + 1] - toCalculation[index];
-		squeres.push(a * b);
+
+		squeres.push(toInt(a) * toInt(b));
 	}
 
-	return Math.abs(sum(squeres));
+	return (Math.abs(sum(squeres))  /  N / N)  || 0
 };
 
 module.exports = { getSpectrumEnergy };

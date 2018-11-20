@@ -40,6 +40,7 @@ segmenter.on('segment', (segment) => {
   const maxSpectrum = max(spectrum);
   // const pushToReportF = pushToReport(noiseLevel, energy, maxSpectrum);
 
+
   if(tissueType === NERVE) {
     notify.nerveNotify();
     // pushToReportF(NERVE);
@@ -49,8 +50,13 @@ segmenter.on('segment', (segment) => {
     // pushToReportF(MUSCLE);
   }
   if (config.DEBUG_MODE) {
-    // console.log(tissueType == NERVE ? colors.FgBlue : colors.FgGreen,
-    //   `>>[${noiseLevel}] ${tissueType}:${energy}: maxSpectrum: ${maxSpectrum} = [${parseInt(rating) || 0} %]`)
+    // console.log(`-------------N:[${NtissueType}] E:[${tissueType}]---------> l:[${noiseLevel}]  r:[${rating}] e:[${energy}] s:[${maxSpectrum}] `);
+    const colorsMap = {
+      [NERVE]: colors.FgBlue,
+      [MUSCLE]: colors.FgGreen,
+    }
+    console.log(colorsMap[tissueType] || colors.FgWhite,
+      `>>[${noiseLevel}] ${tissueType}:${energy}: maxSpectrum: ${maxSpectrum} = [${tissueType && parseInt(rating) || 0} %]`)
   }
 });
 
@@ -67,7 +73,7 @@ setInterval(() => {
   const noiseLevel = mean(noiseLevels) || 0;
   noiseLevels = [];
 
-  if(noiseLevel < config.limitOfSilence) {
+  if(noiseLevel < config.fft.minNoiseLevel) {
     !MIC_IS_RUN ? startRecord() : stopRecord();
   }
   COUNT_OF_TRY_TO_LISTEN = COUNT_OF_TRY_TO_LISTEN !== 3 ? COUNT_OF_TRY_TO_LISTEN + 1 : 3;
