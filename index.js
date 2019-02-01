@@ -33,7 +33,7 @@ const startRecord = () => {
     MIC_IS_RUN = true;
   }
 };
-
+const tI = n => parseInt(n, 10);
 
 // Segment part
 const segmenter = new Segmenter(config.segmenter);
@@ -51,8 +51,11 @@ segmenter.on('segment', (segment) => {
   const diffInSec = (new Date().getTime() - statOfListen ) / 1000;
 
   if(diffInSec > 10) {
+    const ratingE = tI(100 - (MEAN_ENERGY * 100) / energy) || 0;
+    const ratingS = tI(100 - (MEAN_SPECTRUM * 100) / maxSpectrum) || 0;
+
     console.log(colors.FgGreen,
-      `-->  E: ${energy} / [${MEAN_ENERGY}] S: ${maxSpectrum} /[${MEAN_SPECTRUM}]`);
+      `-->  E:[${ratingE} %] ${tI(energy)}/${tI(MEAN_ENERGY)} S:[${ratingS} %] ${maxSpectrum}/${MEAN_SPECTRUM}`);
   } else {
     spectrums.push(maxSpectrum);
     energies.push(energy);
