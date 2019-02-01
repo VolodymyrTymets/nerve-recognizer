@@ -7,12 +7,17 @@ const { getSpectrumInfo } = require('./src/utils/fft/getSpectrumInfo');
 const { notify } = require('./src/utils/notifier');
 const { findNoiseLevel } = require('./src/utils/silence-detect');
 const { NERVE, MUSCLE } = require('./src/constants');
-// const { saveIntoCsv, pushToReport, getFromReport, clearReport } = require('./src/utils/csv-reporter');
 
 
 let noiseLevels = [];
 let MIC_IS_RUN = false;
 let COUNT_OF_TRY_TO_LISTEN = 0;
+
+let statOfListen = null;
+let spectrums = [];
+let energies = [];
+let MEAN_ENERGY = null;
+let MEAN_SPECTRUM = null;
 
 const stopRecord = () => {
   if(global.mic) {
@@ -28,6 +33,8 @@ const startRecord = () => {
     MIC_IS_RUN = true;
   }
 };
+
+
 // Segment part
 const segmenter = new Segmenter(config.segmenter);
 segmenter.on('segment', (segment) => {
@@ -36,28 +43,25 @@ segmenter.on('segment', (segment) => {
     return;
   }
 
+  statOfListen = statOfListen || new Date().getTime();
   const { spectrum, energy, tissueType, rating } = getSpectrumInfo(segment, noiseLevel, config);
   const maxSpectrum = max(spectrum);
   // const pushToReportF = pushToReport(noiseLevel, energy, maxSpectrum);
 
+  const diffInSec = (new Date().getTime() - statOfListen ) / 1000;
 
-  if(tissueType === NERVE) {
-    notify.nerveNotify();
-    // pushToReportF(NERVE);
+  if(diffInSec > 10) {
+    console.log(colors.FgGreen,
+      `--> [${diffInSec}] E: ${maxSpectrum} / [${MEAN_ENERGY}] S: ${energy} /[${MEAN_SPECTRUM}]`);
+  } else {
+    spectrums.push(maxSpectrum);
+    energies.push(energy);
+    MEAN_SPECTRUM = mean(maxSpectrum);
+    MEAN_ENERGY = mean(energies);
+    console.log(colors.FgYellow,
+      `--> listening [${diffInSec}] E: ${maxSpectrum} / [${MEAN_ENERGY}] S: ${energy} /[${MEAN_SPECTRUM}]`);
   }
-  if(tissueType === MUSCLE) {
-    notify.muscleNotify(MUSCLE);
-    // pushToReportF(MUSCLE);
-  }
-  if (config.DEBUG_MODE) {
-    // console.log(`-------------N:[${NtissueType}] E:[${tissueType}]---------> l:[${noiseLevel}]  r:[${rating}] e:[${energy}] s:[${maxSpectrum}] `);
-    const colorsMap = {
-      [NERVE]: colors.FgBlue,
-      [MUSCLE]: colors.FgGreen,
-    }
-    console.log(colorsMap[tissueType] || colors.FgWhite,
-      `>>[${noiseLevel}] ${tissueType}:${energy}: maxSpectrum: ${maxSpectrum} = [${tissueType && parseInt(rating) || 0} %]`)
-  }
+
 });
 
 // Mic part
@@ -88,15 +92,4 @@ process.on('exit', () => {
   notify.gpioOff();
   console.log(colors.FgWhite,'<----by by----->');
 });
-process.on('SIGINT', async () => {
-  // for investigation
-  // try {
-  //   await saveIntoCsv(getFromReport(MUSCLE), MUSCLE);
-  //   await saveIntoCsv(getFromReport(NERVE), NERVE);
-  //   clearReport(NERVE);
-  //   clearReport(MUSCLE);
-  // } catch (e) {
-  //   console.log(e)
-  // }
-  process.exit();
-});
+process.on('SIGINT', async () => process.exit());
