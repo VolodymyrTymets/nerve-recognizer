@@ -52,14 +52,14 @@ segmenter.on('segment', (segment) => {
 
   if(diffInSec > 10) {
     console.log(colors.FgGreen,
-      `--> [${diffInSec}] E: ${maxSpectrum} / [${MEAN_ENERGY}] S: ${energy} /[${MEAN_SPECTRUM}]`);
+      `-->  E: ${energy} / [${MEAN_ENERGY}] S: ${maxSpectrum} /[${MEAN_SPECTRUM}]`);
   } else {
     spectrums.push(maxSpectrum);
     energies.push(energy);
-    MEAN_SPECTRUM = mean(maxSpectrum);
+    MEAN_SPECTRUM = mean(spectrums);
     MEAN_ENERGY = mean(energies);
-    console.log(colors.FgYellow,
-      `--> listening [${diffInSec}] E: ${maxSpectrum} / [${MEAN_ENERGY}] S: ${energy} /[${MEAN_SPECTRUM}]`);
+    console.log(colors.FgWhite,
+      `--> listening [${diffInSec}] E: ${energy} / [${MEAN_ENERGY}] S: ${maxSpectrum} /[${MEAN_SPECTRUM}]`);
   }
 
 });
