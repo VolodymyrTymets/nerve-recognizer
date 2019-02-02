@@ -65,6 +65,11 @@ class Notifier {
   micNotify(value) {
     this._gpioNotify(MIC, value);
   }
+  clear() {
+    this._gpio.mic && this._gpio.mic.unexport();
+    this._gpio.nerve && this._gpio.nerve.unexport();
+    this._gpio.muscle && this._gpio.muscle.unexport();
+  }
 }
 
 const notify = new Notifier();

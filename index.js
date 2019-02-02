@@ -1,86 +1,60 @@
-const { mean, max } = require('lodash');
 const config = require('./config');
 const { colors } = require('./src/utils/colors');
+const { NERVE, MUSCLE } = require('./src/constants');
 const { Mic } = require('./src/utils/Mic');
-const { getSpectrumInfo } = require('./src/utils/fft/getSpectrumInfo');
+const { SpectrumWorker } = require('./src/utils/fft/SpectrumWorker');
 const { notify } = require('./src/utils/notifier');
 
+let switcher = null;
 
-
-let MIC_IS_RUN = false;
-let COUNT_OF_TRY_TO_LISTEN = 0;
-
-let statOfListen = null;
-let spectrums = [];
-let energies = [];
-let MEAN_ENERGY = null;
-let MEAN_SPECTRUM = null;
+const spectrumWorker = new SpectrumWorker(config);
+spectrumWorker.on(NERVE, notify.nerveNotify);
+spectrumWorker.on(MUSCLE, notify.muscleNotify);
 
 const stopRecord = () => {
   if(global.mic) {
     mic.stop();
-    // MIC_IS_RUN = false;
-    // COUNT_OF_TRY_TO_LISTEN = 0;
-    // notify.micNotify(0);
+    notify.micNotify(0);
+    spectrumWorker.stop();
   }
 };
 const startRecord = () => {
   if(global.mic) {
+    console.log(`Run: mic:${config.mic.device} gpio: [mic:${config.gpio.mic} nerve:${config.gpio.nerve} muscle:${config.gpio.muscle}]`)
     mic.start();
-    MIC_IS_RUN = true;
+    notify.micNotify(1);
   }
 };
-const tI = n => parseInt(n, 10);
 
-// Mic part
 global.mic = new Mic(config, (audioData) => {
   const wave = audioData.channelData[0];
-
-  statOfListen = statOfListen || new Date().getTime();
-  const { spectrum, energy } = getSpectrumInfo(wave, null, config);
-  const maxSpectrum = max(spectrum);
-
-  const diffInSec = (new Date().getTime() - statOfListen ) / 1000;
-
-  if(diffInSec > 10) {
-    const ratingE = tI(100 - (MEAN_ENERGY * 100) / energy) || 0;
-    const ratingS = tI(100 - (MEAN_SPECTRUM * 100) / maxSpectrum) || 0;
-
-    console.log(colors.FgGreen,
-      `-->  E:[${ratingE} %] ${tI(energy)}/${tI(MEAN_ENERGY)} S:[${ratingS} %] ${maxSpectrum}/${MEAN_SPECTRUM}`);
-    if(ratingS > 0) {
-       notify.nerveNotify();
-    } else {
-      notify.muscleNotify();
-    }
-  } else {
-    spectrums.push(maxSpectrum);
-    energies.push(energy);
-    MEAN_SPECTRUM = mean(spectrums);
-    MEAN_ENERGY = mean(energies);
-    console.log(colors.FgWhite,
-      `--> listening [${diffInSec}] E: ${energy} / [${MEAN_ENERGY}] S: ${maxSpectrum} /[${MEAN_SPECTRUM}]`);
-  }
+  spectrumWorker.start(wave);
 });
 
-startRecord();
-// setInterval(() => {
-//   const noiseLevel = mean(noiseLevels) || 0;
-//   noiseLevels = [];
-//
-//   if(noiseLevel < config.fft.minNoiseLevel) {
-//     !MIC_IS_RUN ? startRecord() : stopRecord();
-//   }
-//   COUNT_OF_TRY_TO_LISTEN = COUNT_OF_TRY_TO_LISTEN !== 3 ? COUNT_OF_TRY_TO_LISTEN + 1 : 3;
-//   notify.micNotify(COUNT_OF_TRY_TO_LISTEN === 3 ? 1 : 0);
-// }, 2000);
 
-console.log(`Run: mic:${config.mic.device} noise: ${config.fft.minNoiseLevel} rating: ${config.fft.rating} gpio: [mic:${config.gpio.mic} nerve:${config.gpio.nerve} muscle:${config.gpio.muscle}]`)
-
+try {
+  const Gpio = require('onoff').Gpio;
+  const switcher  = new Gpio(config.gpio.switcher, 'in');
+  switcher.watch((err, value) => {
+    if (err) { console.log(err) }
+    if (value) {
+      config.DEBUG_MODE && console.log(colors.FgBlue, `[Switch] ---> [${value}]`);
+      startRecord();
+    } else {
+      config.DEBUG_MODE && console.log(colors.FgBlue, `[Switch] ---> [${value}]`);
+      stopRecord();
+    }
+  });
+} catch (e) {
+  console.log('----> !!Error -> GPIO is not detected!!!');
+  startRecord();
+}
 
 process.on('exit', () => {
   stopRecord();
   notify.gpioOff();
+  notify.clear();
+  switcher.unexport();
   console.log(colors.FgWhite,'<----by by----->');
 });
 process.on('SIGINT', async () => process.exit());
