@@ -14,8 +14,8 @@ spectrumWorker.on(MUSCLE,() => notify.muscleNotify());
 const stopRecord = () => {
   if(global.mic) {
     mic.stop();
-    notify.micNotify(0);
     spectrumWorker.stop();
+    notify.gpioOff();
   }
 };
 const startRecord = () => {
