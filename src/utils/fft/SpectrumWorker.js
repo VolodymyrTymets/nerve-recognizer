@@ -51,6 +51,7 @@ class SpectrumWorker extends EventEmitter {
 	stop() {
     this._spectrums = [];
     this.MEAN_SPECTRUM = 0
+    this._statOfListen = null;
   }
 }
 
