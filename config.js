@@ -23,9 +23,9 @@ module.exports = {
     fileType: 'wav',
   },
   gpio: {
-    mic: 26,
-    nerve: 21,
-    muscle: 16,
+    mic: 13,
+    nerve: 26,
+    muscle: 19,
   },
  // limitOfSilence: 0.2,
   DEBUG_MODE: process.env.DEBUG || true,

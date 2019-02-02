@@ -48,14 +48,14 @@ class Notifier {
 	nerveNotify() {
 		this._gpioNotify(NERVE, 1);
     this._gpioNotify(MUSCLE, 0);
-		setTimeout(() => this._gpioNotify(NERVE, 0), 500);
-		this.soundNotify('nerve');
+		// setTimeout(() => this._gpioNotify(NERVE, 0), 500);
+		// this.soundNotify('nerve');
 	}
   muscleNotify() {
     this._gpioNotify(MUSCLE, 1);
     this._gpioNotify(NERVE, 0);
-    setTimeout(() => this._gpioNotify(MUSCLE, 0), 500);
-    this.soundNotify(MUSCLE);
+    // setTimeout(() => this._gpioNotify(MUSCLE, 0), 500);
+    // this.soundNotify(MUSCLE);
   }
   gpioOff() {
     this._gpioNotify(MUSCLE, 0);

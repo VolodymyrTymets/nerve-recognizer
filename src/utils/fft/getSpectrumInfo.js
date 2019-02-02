@@ -8,17 +8,17 @@ const getSpectrumInfo = (wave, noiseLevel, config) => {
 	const spliceSpectrumRes = spliceSpectrum(spectrum.spectrum, config.fft.N);
 	// const maxSpectrum = spectrum.spectrum[spliceSpectrumRes.maxIndex];
 	const energy = getSpectrumEnergy(spectrum.spectrum, spliceSpectrumRes.maxIndex, 10) * 100;
-	const rating = (energy / noiseLevel) * 100;
+	//const rating = (energy / noiseLevel) * 100;
 
 	//const tissueType = getTissueType(energy, config.fft.minEnergy);
-  const NtissueType = getTissueTypeByNoiseLeavel(rating, noiseLevel, config)
+  //const NtissueType = getTissueTypeByNoiseLeavel(rating, noiseLevel, config)
   // console.log(`-------------N:[${NtissueType}] E:[${tissueType}]---------> l:[${noiseLevel}]  r:[${rating}] e:[${energy}] s:[${maxSpectrum}] `);
 	return {
 		energy,
 		spectrum: spliceSpectrumRes.splicedSpectrum,
 		maxIndex: spliceSpectrumRes.maxIndex,
-        rating,
-		tissueType: NtissueType,
+		//rating,
+		//tissueType: NtissueType,
 	}
 };
 
