@@ -4,7 +4,7 @@ console.log('-->', `btn: ${btnNumber} led: ${letNumber}` );
 
 try {
   const Gpio = require('onoff').Gpio;
-  const btn  = new Gpio(btnNumber, 'in');
+  const btn  = new Gpio(btnNumber, 'in', 'both');
   const led  = new Gpio(letNumber, 'out');
 
   btn.watch((err, value) => {

@@ -34,7 +34,7 @@ global.mic = new Mic(config, (audioData) => {
 
 try {
   const Gpio = require('onoff').Gpio;
-  const switcher  = new Gpio(config.gpio.switcher, 'in');
+  const switcher  = new Gpio(config.gpio.switcher, 'in', 'both');
   config.DEBUG_MODE && console.log(colors.FgBlue, `[Switch start] ---> [${switcher.readSync()}]`);
   switcher.watch((err, value) => {
     if (err) { console.log(err) }
