@@ -8,8 +8,8 @@ const { notify } = require('./src/utils/notifier');
 let switcher = null;
 
 const spectrumWorker = new SpectrumWorker(config);
-spectrumWorker.on(NERVE, notify.nerveNotify);
-spectrumWorker.on(MUSCLE, notify.muscleNotify);
+spectrumWorker.on(NERVE, () => notify.nerveNotify());
+spectrumWorker.on(MUSCLE,() => notify.muscleNotify());
 
 const stopRecord = () => {
   if(global.mic) {
